@@ -17,29 +17,29 @@ func main() {
 	// Keep selecting until both feeds are closed or timeout
 	for feedA != nil || feedB != nil {
 		select {
-		case p, ok := <-feedA:
-			if !ok {
-				feedA = nil
-				continue
+			case p, ok := <-feedA:
+				if !ok {
+					feedA = nil
+					continue
+				}
+				fmt.Println("A", p)
+			case p, ok := <-feedB:
+				if !ok {
+					feedB = nil
+					continue
+				}
+				fmt.Println("B", p)
+			case <-timeout:
+				fmt.Println("stopping due to timeout")
+				return
 			}
-			fmt.Println("A", p)
-		case p, ok := <-feedB:
-			if !ok {
-				feedB = nil
-				continue
-			}
-			fmt.Println("B", p)
-		case <-timeout:
-			fmt.Println("stopping due to timeout")
-			return
-		}
 	}
 
 	fmt.Println("all feeds closed")
 }
 
 // priceFeed sends a few prices then closes its output channel.
-func priceFeed(name string, out chan<- float64, delay time.Duration) {
+func priceFeed(_ string, out chan<- float64, delay time.Duration) {
 	defer close(out)
 	for i := range 5 {
 		time.Sleep(delay)
